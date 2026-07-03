@@ -1,22 +1,53 @@
-# WSA Windows 11 Crash and Network Fix
+# WSA Windows 11 Repair Toolkit
 
-PowerShell tools and notes for repairing common Windows Subsystem for Android issues on Windows 11:
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-2f6db5?logo=powershell)](https://learn.microsoft.com/powershell/)
+[![Windows](https://img.shields.io/badge/Windows-11-0078d4?logo=windows)](https://www.microsoft.com/windows/)
+[![WSA](https://img.shields.io/badge/WSA-sideloaded%20builds-orange)](#supported-scenarios)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+PowerShell repair tools for Windows Subsystem for Android on Windows 11.
+
+This project focuses on two failure modes often seen with sideloaded WSA builds:
 
 - `WsaClient.exe` crashes or WSA does not open.
-- Android apps inside WSA have no internet access.
-- Google Play or Google account sign-in gets stuck because Android reports `Network is unreachable`, `No route to host`, or DNS timeouts.
+- Android apps inside WSA have no internet access, causing Google Play or Google account sign-in to fail with errors such as `Network is unreachable`, `No route to host`, or DNS timeouts.
 
-This repository was created from a real repair session on Windows 11 24H2 with a sideloaded WSA `2407.40000.4.0` build.
+The toolkit was created from a real Windows 11 24H2 repair session with a sideloaded WSA `2407.40000.4.0` build.
+
+## Table of Contents
+
+- [Important Warning](#important-warning)
+- [Supported Scenarios](#supported-scenarios)
+- [Quick Start](#quick-start)
+- [Safer Staged Usage](#safer-staged-usage)
+- [What the Repair Does](#what-the-repair-does)
+- [Backups and Restore](#backups-and-restore)
+- [Expected Result](#expected-result)
+- [Repository Layout](#repository-layout)
+- [Privacy](#privacy)
+- [Contributing](#contributing)
 
 ## Important Warning
 
-Microsoft ended official WSA support. These scripts are intended for sideloaded or development WSA builds such as WSABuilds or MagiskOnWSA-style packages.
+Microsoft ended official WSA support. This repository is intended for sideloaded or development WSA packages such as WSABuilds or MagiskOnWSA-style builds.
 
-Use at your own risk. The scripts create backups before changing WSA files or settings, but they still modify a Windows AppX package, WSA settings, and Hyper-V/HNS networking services.
+Use at your own risk. The repair script can modify a Windows AppX package, patch `WsaClient.exe` when a known byte pattern is found, edit the WSA settings hive, and restart Windows host networking services.
 
 Run PowerShell as **Administrator** before using the repair script.
 
+## Supported Scenarios
+
+| Scenario | Script action |
+| --- | --- |
+| WSA opens but Android has no internet | Disable WSA Local/Advanced networking and refresh HNS NAT |
+| WSA crashes on app launch | Add app URI capability and apply a guarded WSA client crash patch |
+| Dual-GPU laptop performance issues | Set Windows graphics preference for `WsaClient.exe` to `High performance` |
+| Need status before or after repair | Run the status script and ADB network checks |
+| Need rollback | Restore from the backup folder created by the repair run |
+
 ## Quick Start
+
+Open PowerShell as Administrator:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
@@ -53,22 +84,36 @@ To inspect the current status:
 .\scripts\Show-WSAStatus.ps1
 ```
 
-## Repository Contents
+## What the Repair Does
 
-- `scripts/Repair-WSAWin11.ps1`: Main repair script.
-- `scripts/Show-WSAStatus.ps1`: Status and network diagnostic script.
-- `scripts/Restore-WSABackup.ps1`: Restore files and settings from a backup created by the repair script.
-- `docs/WHAT_WE_FIXED.md`: Technical explanation of the repair case this repository came from.
-- `docs/TROUBLESHOOTING.md`: Common errors and recovery steps.
+### Crash repair
 
-## Backups and Logs
+Some sideloaded WSA builds can crash in the app URI handler path on newer Windows 11 builds. The repair script first tries the manifest capability fix, then applies a guarded binary patch only if the expected byte patterns are present.
+
+If the expected byte patterns are not found, the script stops instead of patching an unknown binary.
+
+### Network repair
+
+When WSA Local/Advanced networking is enabled, Android may receive a LAN-style address but fail to reach the gateway or DNS. The repair script disables that mode while preserving the original UWP registry value type, then refreshes Windows host networking so WSA can use a clean NAT network.
+
+### GPU preference
+
+The script sets this Windows graphics preference for `WsaClient.exe`:
+
+```text
+GpuPreference=2;
+```
+
+That is the Windows `High performance` setting and usually selects the stronger GPU on dual-GPU laptops.
+
+## Backups and Restore
 
 Every repair run writes local output to:
 
 - `backups/<timestamp>/`
 - `logs/repair-<timestamp>.log`
 
-Those folders are ignored by git and should not be committed.
+These folders are ignored by git and should not be committed.
 
 To restore a previous run:
 
@@ -86,17 +131,50 @@ After a successful repair:
 - `ping google.com` and `ping accounts.google.com` work from inside WSA.
 - Google Play and the Google account sign-in flow can open.
 
+## Repository Layout
+
+```text
+.
+|-- docs/
+|   |-- TROUBLESHOOTING.md
+|   `-- WHAT_WE_FIXED.md
+|-- scripts/
+|   |-- Repair-WSAWin11.ps1
+|   |-- Restore-WSABackup.ps1
+|   `-- Show-WSAStatus.ps1
+|-- .github/
+|   |-- ISSUE_TEMPLATE/
+|   `-- workflows/
+|-- LICENSE
+|-- CONTRIBUTING.md
+|-- SECURITY.md
+|-- CHANGELOG.md
+`-- README.md
+```
+
 ## Privacy
 
 The repository is designed not to include local logs, machine-specific backups, tokens, account data, or user profile paths.
 
-Before publishing your own fork, you can check tracked files with:
+Before publishing your own fork, verify tracked files with:
 
 ```powershell
 git ls-files
 ```
 
 Only source scripts and documentation should be tracked.
+
+## Contributing
+
+Bug reports and version-specific findings are welcome. Please include:
+
+- Windows version and build.
+- WSA package version.
+- Whether WSA is Store, sideloaded, WSABuilds, or MagiskOnWSA-style.
+- Relevant Event Viewer crash module and exception code.
+- Network symptoms from ADB or logcat.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Future Translations
 

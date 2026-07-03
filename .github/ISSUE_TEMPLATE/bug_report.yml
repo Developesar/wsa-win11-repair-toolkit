@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a WSA crash or network issue
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue. Please remove any private data from logs before posting.
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version and build
+      placeholder: "Example: Windows 11 24H2 build 26100"
+    validations:
+      required: true
+  - type: input
+    id: wsa-version
+    attributes:
+      label: WSA version
+      placeholder: "Example: 2407.40000.4.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: install-type
+    attributes:
+      label: WSA installation type
+      options:
+        - Store
+        - Sideloaded
+        - WSABuilds
+        - MagiskOnWSA-style
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: Symptoms
+      description: Describe what fails and when.
+      placeholder: "WSA crashes when launching Play Store..."
+    validations:
+      required: true
+  - type: textarea
+    id: event-viewer
+    attributes:
+      label: Event Viewer details
+      description: Include faulting module and exception code if available.
+      render: text
+  - type: textarea
+    id: adb-network
+    attributes:
+      label: ADB network output
+      description: Paste sanitized output from Show-WSAStatus.ps1 or ADB network commands.
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I removed private data, tokens, usernames, and full local paths from logs.
+          required: true
+        - label: I understand this project is for unsupported/sideloaded WSA repair scenarios.
+          required: true
