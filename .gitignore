@@ -1,0 +1,24 @@
+# Local run output
+logs/
+backups/
+local-artifacts/
+
+# Windows and PowerShell noise
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
+
+# Diagnostics and private machine artifacts
+*.log
+*.etl
+*.dmp
+*.mdmp
+*.wer
+*.reg
+*.zip
+
+# Keep repo scripts and docs tracked explicitly.
+!scripts/*.ps1
+!docs/*.md
+!README.md
