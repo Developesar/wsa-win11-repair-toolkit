@@ -16,6 +16,7 @@ The toolkit was created from a real Windows 11 24H2 repair session with a sidelo
 
 ## Table of Contents
 
+- [Problems This Toolkit Targets](#problems-this-toolkit-targets)
 - [Important Warning](#important-warning)
 - [Supported Scenarios](#supported-scenarios)
 - [Quick Start](#quick-start)
@@ -25,7 +26,25 @@ The toolkit was created from a real Windows 11 24H2 repair session with a sidelo
 - [Expected Result](#expected-result)
 - [Repository Layout](#repository-layout)
 - [Privacy](#privacy)
+- [GitHub Repository Metadata](#github-repository-metadata)
 - [Contributing](#contributing)
+
+## Problems This Toolkit Targets
+
+This project is meant to be discoverable by users searching for real WSA failure symptoms, including:
+
+- Windows Subsystem for Android crash fix on Windows 11.
+- WSA not opening after Windows 11 24H2 update.
+- `WsaClient.exe` crash, `MoAppCrash`, `MoBEX`, `combase.dll`, or `ucrtbase.dll`.
+- WSA sideloaded build crash on app launch.
+- WSABuilds or MagiskOnWSA `WsaClient.exe` repair.
+- WSA Google Play not working.
+- WSA Google account sign-in stuck.
+- WSA no internet, DNS timeout, `Network is unreachable`, or `No route to host`.
+- WSA Advanced Networking or Local Network Access breaks Android internet.
+- WSA NAT networking repair using HNS, VM Compute, and IP Helper.
+
+If your Android apps inside WSA open but cannot reach Google Play, `accounts.google.com`, or `play.googleapis.com`, start with the network repair flow. If WSA crashes before Android apps open, start with the crash repair flow.
 
 ## Important Warning
 
@@ -163,6 +182,37 @@ git ls-files
 ```
 
 Only source scripts and documentation should be tracked.
+
+## GitHub Repository Metadata
+
+Recommended GitHub repository name:
+
+```text
+wsa-win11-repair-toolkit
+```
+
+Recommended short description:
+
+```text
+PowerShell toolkit to repair Windows Subsystem for Android crashes and NAT networking on Windows 11.
+```
+
+Recommended GitHub topics:
+
+```text
+wsa
+windows-subsystem-for-android
+windows-11
+powershell
+wsa-repair
+wsabuilds
+magiskonwsa
+google-play
+android
+hyper-v
+hns
+networking
+```
 
 ## Contributing
 
