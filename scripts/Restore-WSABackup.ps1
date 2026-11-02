@@ -64,9 +64,7 @@ if ($localStateBackup) {
 
         $restoreReg = Join-Path $env:TEMP "wsa-restore-localstate-$(Get-Date -Format yyyyMMddHHmmss).reg"
         $text = Get-Content -LiteralPath $localStateBackup.FullName -Raw
-        $text = $text -replace '\[HKEY_USERS\\WSAFixTemp\\LocalState\]', '[HKEY_USERS\WSARestoreTemp\LocalState]'
-        $text = $text -replace '\[HKEY_USERS\\WSAAdvancedCodex\\LocalState\]', '[HKEY_USERS\WSARestoreTemp\LocalState]'
-        $text = $text -replace '\[HKEY_USERS\\WSATempCodex\\LocalState\]', '[HKEY_USERS\WSARestoreTemp\LocalState]'
+        $text = $text -replace '\[HKEY_USERS\\WSA[^\\]+\\LocalState\]', '[HKEY_USERS\WSARestoreTemp\LocalState]'
         Set-Content -LiteralPath $restoreReg -Value $text -Encoding Unicode
 
         & reg.exe import $restoreReg | Out-Null
